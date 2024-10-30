@@ -25,6 +25,10 @@ const TransactionDetails = ({route}) => {
           },
         }
       );
+      if (!response.ok) {
+        console.error(`Error: ${response.status} - ${response.statusText}`);
+        return;
+      }
 
       const result = await response.json();
 

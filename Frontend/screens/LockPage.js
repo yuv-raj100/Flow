@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar } from "react-native";
+import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView, Platform } from "react-native";
 import React, { useState, useRef } from "react";
 import { VirtualKeyboard } from "react-native-screen-keyboard";
 import { OtpInput } from "react-native-otp-entry";
@@ -67,43 +67,49 @@ const LockPage = () => {
 
   return (
     <View style={styles.container} className="bg-bgColor h-[100%]">
-      <View className="items-center mt-20">
-        <Text
-          className="text-white text-2xl font-bold "
-          style={{ letterSpacing: 4, fontFamily: "Roboto" }}
-        >
-          RAJ
-        </Text>
-        <Text className="text-white text-2xl font-bold">FINANCE</Text>
-      </View>
-      {/* 
+      <KeyboardAvoidingView
+        behavior="padding"
+      >
+        <View className="items-center mt-20">
+          <Text
+            className="text-white text-2xl font-bold "
+            style={{ letterSpacing: 4, fontFamily: "Roboto" }}
+          >
+            RAJ
+          </Text>
+          <Text className="text-white text-2xl font-bold">FINANCE</Text>
+        </View>
+        {/* 
       <Text className="text-white text-2xl font-bold">{typedText}</Text> */}
 
-      <View className="mt-20 px-16">
-        <OtpInput
-          numberOfDigits={4}
-          onTextChange={(typedText) => setTypedText(typedText)}
-          theme={{
-            containerStyle: styles.container,
-            pinCodeContainerStyle: styles.pinCodeContainer,
-            pinCodeTextStyle: styles.pinCodeText,
-            focusStickStyle: styles.focusStick,
-            focusedPinCodeContainerStyle: styles.activePinCodeContainer,
-          }}
-        />
-      </View>
+        <View className="mt-20 px-16">
+          <OtpInput
+            numberOfDigits={4}
+            onTextChange={(typedText) => setTypedText(typedText)}
+            theme={{
+              containerStyle: styles.container,
+              pinCodeContainerStyle: styles.pinCodeContainer,
+              pinCodeTextStyle: styles.pinCodeText,
+              focusStickStyle: styles.focusStick,
+              focusedPinCodeContainerStyle: styles.activePinCodeContainer,
+            }}
+          />
+        </View>
 
-      <View className="items-center mt-2">
-        {error.length > 0 && (
-          <Text className="text-white text-md text-red-400">*{error}</Text>
-        )}
-      </View>
+        <View className="items-center mt-2">
+          {error.length > 0 && (
+            <Text className="text-white text-md text-red-400">*{error}</Text>
+          )}
+        </View>
 
-      <View className="items-center mt-5">
-        <TouchableOpacity onPress={()=>navigation.push('SetPIN')}>
-          <Text className="text-white text-md font-semibold">Set new PIN</Text>
-        </TouchableOpacity>
-      </View>
+        <View className="items-center mt-5">
+          <TouchableOpacity onPress={() => navigation.push("SetPIN")}>
+            <Text className="text-white text-md font-semibold">
+              Set new PIN
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
 
       <View className="absolute bottom-12 w-[100%]">
         <TouchableOpacity

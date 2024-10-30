@@ -103,6 +103,10 @@ const AddTransaction = ({route}) => {
          },
          body: JSON.stringify(data),
        });
+       if (!res.ok) {
+         console.error(`Error: ${res.status} - ${res.statusText}`);
+         return;
+       }
        const ans = await res.json();
        if (res.ok) {
          navigation.pop();

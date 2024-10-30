@@ -39,6 +39,10 @@ const Ledger = () => {
               "Content-Type": "application/json",
             },
           });
+          if (!res.ok) {
+            console.error(`Error: ${res.status} - ${res.statusText}`);
+            return;
+          }
           const ans = await res.json();
           const customers = Array.isArray(ans.customers) ? ans.customers : [];
           for (var i = 0; i < customers.length; i++) {

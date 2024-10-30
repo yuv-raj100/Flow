@@ -34,6 +34,11 @@ const RemindersPage = () => {
               "Content-Type": "application/json",
             },
           });
+          if (!res.ok) {
+            console.error(`Error: ${res.status} - ${res.statusText}`);
+            return;
+          }
+          //console.log(res);
           const ans = await res.json();
           // console.log(ans);
           const reminders = Array.isArray(ans.reminders) ? ans.reminders : [];

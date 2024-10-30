@@ -27,7 +27,10 @@ const DeleteUser = ({route}) => {
           },
         }
       );
-
+      if (!response.ok) {
+        console.error(`Error: ${response.status} - ${response.statusText}`);
+        return;
+      }
       const result = await response.json();
       if (response.ok) {
         navigation.pop(2);

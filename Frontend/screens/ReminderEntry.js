@@ -19,6 +19,10 @@ const ReminderEntry = ({isReceived, amount, desc, createdOn,reminderDate, billDa
           "Content-Type": "application/json",
         },
       });
+      if (!res.ok) {
+        console.error(`Error: ${res.status} - ${res.statusText}`);
+        return;
+      }
       const ans = await res.json();
     } catch (error) {
       console.log(error);

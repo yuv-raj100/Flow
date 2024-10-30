@@ -1,4 +1,4 @@
-import { View, Text, TextInput,StyleSheet,StatusBar, TouchableOpacity } from "react-native";
+import { View, Text, TextInput,StyleSheet,StatusBar, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import React, { useState } from "react";
 import BackArrow from "../svgs/BackArrow";
 import { useNavigation } from "@react-navigation/native";
@@ -64,6 +64,10 @@ const AddUser = () => {
         },
         body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        console.error(`Error: ${res.status} - ${res.statusText}`);
+        return;
+      }
       const ans = await res.json();
       if (res.ok) {
         navigation.pop();
@@ -74,42 +78,46 @@ const AddUser = () => {
   };
 
   return (
-    <View className="bg-bgColor h-[100%]" style={styles.container}>
-      <View className="bg-BlueColor h-[50px] flex-row items-center p-2">
-        <TouchableOpacity className="mr-6" onPress={() => navigation.pop()}>
-          <BackArrow />
-        </TouchableOpacity>
-        <Text className="text-lg font-semibold text-white">Add Customer</Text>
-      </View>
-
-      <View className=" p-2 px-4">
-        <Text className="text-white text-lg">Name</Text>
-        <TextInput
-          editable
-          value={text}
-          placeholder=""
-          onChangeText={(text) => setText(text)}
-          className="border-b-2 border-b-[#3A81F1] h-10 text-white text-lg"
-        ></TextInput>
-      </View>
-
-      {error.length > 0 && (
-        <View className="p-2 mt-2">
-          <Text className="text-yellow-600">{error}</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View className="bg-bgColor h-[100%]" style={styles.container}>
+        <View className="bg-BlueColor h-[50px] flex-row items-center p-2">
+          <TouchableOpacity className="mr-6" onPress={() => navigation.pop()}>
+            <BackArrow />
+          </TouchableOpacity>
+          <Text className="text-lg font-semibold text-white">Add Customer</Text>
         </View>
-      )}
 
-      <View className="absolute bottom-12 w-[100%]">
-        <TouchableOpacity
-          className="my-2 mx-8 border-slate-400 border border-b-2 rounded-md  px-2 py-2 bg-BlueColor"
-          onPress={() => handleClick()}
-        >
-          <Text className="text-center text-white text-lg font-semibold">
-            Confirm
-          </Text>
-        </TouchableOpacity>
+        <View className=" p-2 px-4">
+          <Text className="text-white text-lg">Name</Text>
+          <TextInput
+            editable
+            value={text}
+            placeholder=""
+            onChangeText={(text) => setText(text)}
+            className="border-b-2 border-b-[#3A81F1] h-10 text-white text-lg"
+          ></TextInput>
+        </View>
+
+        {error.length > 0 && (
+          <View className="p-2 mt-2">
+            <Text className="text-yellow-600">{error}</Text>
+          </View>
+        )}
+
+        <View className="absolute bottom-12 w-[100%]">
+          <TouchableOpacity
+            className="my-2 mx-8 border-slate-400 border border-b-2 rounded-md  px-2 py-2 bg-BlueColor"
+            onPress={() => handleClick()}
+          >
+            <Text className="text-center text-white text-lg font-semibold">
+              Confirm
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

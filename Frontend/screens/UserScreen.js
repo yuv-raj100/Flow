@@ -23,6 +23,7 @@ const UserScreen = ({route}) => {
   const transactionList = useSelector((store) => store.transactionList.items);
   const [balance,setBalance] = useState(0);
   const [isPositive, setIsPositive] = useState(true);
+  const [blank, setBlank] = useState(false);
 
   const url = API_URL+"/getTransaction";
   // console.log(url)
@@ -56,6 +57,10 @@ const UserScreen = ({route}) => {
             "Content-Type": "application/json",
           },
         });
+        if (!res.ok) {
+          setBlank(true);
+          //console.error(`Error: ${res.status} - ${res.statusText}`);
+        }
         const ans = await res.json();
         const transactions = Array.isArray(ans.transactions) ? ans.transactions : [];
         //console.log(transactions)
@@ -116,7 +121,7 @@ const UserScreen = ({route}) => {
 
       { transactionList.length == 0 ? (
         <View style={styles.activityStyle}>
-          <ActivityIndicator size="large" color="#00ff00" />
+          {blank? <View className='justify-center items-center'><Text className='font-bold text-xl text-slate-400'>Start Transaction</Text></View> : <ActivityIndicator size="large" color="#00ff00" />}
         </View>
       ) : (
         <View className="pb-[190px]">
