@@ -3,7 +3,8 @@ const router = require('express').Router();
 const { addCustomer, getCustomers, deleteGroup} = require('../controllers/manageGroup');
 const { getReminders, changeReminderStatus } = require('../controllers/manageReminders');
 const { addTransaction, getTransactions, deleteTransaction} = require('../controllers/manageTransactions');
-const {login, register} = require('../controllers/userControllers')
+const {login, register} = require('../controllers/userControllers');
+const { saveToken } = require('../firebase/index');
 
 
 
@@ -17,6 +18,7 @@ router.delete("/deleteTransaction/:customerId/:transactionId/:email",deleteTrans
 router.get("/getReminders",getReminders);
 router.delete('/deleteUser/:email/:customerId',deleteGroup)
 router.get('/toggleReminder',changeReminderStatus)
+router.post("/registerToken", saveToken);
 // router.get('/getGroups',getGroups)
 // router.get('/search',searchUser)
 // router.post('/addGroup',addGroup)

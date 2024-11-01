@@ -129,6 +129,7 @@ const deleteGroup = async (req, res) => {
 
 
 const getCustomers = async (req, res, next) => {
+  console.log("hi");
   try {
     const email = req.query.email;
     const existingUser = await userModel.findOne({ email });
