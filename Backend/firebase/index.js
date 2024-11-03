@@ -22,9 +22,9 @@ firebase.initializeApp({
 });
 
 const saveToken  = async (req, res) => {
-  const userId="1001";
-  const { token } = req.body;
-  //console.log(token);
+  const { token, device } = req.body;
+  console.log(device);
+  const userId=device;
   if (!token) {
     return res.status(400).json({ message: "Token is required" });
   }
@@ -48,76 +48,90 @@ const saveToken  = async (req, res) => {
 };
 
 
-const sendNotification = async (req,res) => {
+const sendNotification = async (req, res) => {
   const email="raj@123";
-    try {
-        const tokenRecord = await Token.findOne({ userId: "1001" }); // Use the correct userId
-        if (!tokenRecord) {
-          console.error("No token found for this user");
-          return;
-        }
+  try {
+    const currentDateFormat = new Date();
+    const formattedDate = currentDateFormat.toLocaleDateString("en-GB");
+    const formattedDateWithHyphens = formattedDate.split("/").join("-");
+    const currentDate = formattedDateWithHyphens; // Get current date in YYYY-MM-DD format
 
-        const userToken = tokenRecord.token;
-        console.log(`Sending notification to token: ${userToken}`);
-        const currentDateFormat = new Date();
-        const formattedDate = currentDateFormat.toLocaleDateString("en-GB");
-        const formattedDateWithHyphens = formattedDate.split("/").join("-");
-        const currentDate = formattedDateWithHyphens; // Get current date in YYYY-MM-DD format
-        console.log(`Checking reminders for ${email} on ${currentDate}`);
+    console.log(`Checking reminders on ${currentDate}`);
 
-        const reminders = await reminderModel.findOne(
-          {
-            email,
-          },
-          {
-            reminders: {
-              $filter: {
-                input: "$reminders",
-                as: "reminder",
-                cond: { $eq: ["$$reminder.reminderDate", currentDate] },
-              },
+    // Fetch all users
+    const users = await Token.find(); // Assuming you have a User model
+
+    // Iterate over each user to send notifications
+    for (const user of users) {
+      const userId = user.userId; // Get the user's userId
+      const tokenRecord = await Token.findOne({ userId }); // Find the token for this user
+
+      if (!tokenRecord) {
+        console.error(`No token found for user: ${userId}`);
+        continue; // Skip to the next user if no token found
+      }
+
+      const userToken = tokenRecord.token;
+      console.log(`Sending notification to token: ${userToken}`);
+
+      // Fetch reminders for the user based on userId (adjust your query accordingly)
+      const reminders = await reminderModel.findOne(
+        {
+          email, // Assuming reminders are stored with userId
+        },
+        {
+          reminders: {
+            $filter: {
+              input: "$reminders",
+              as: "reminder",
+              cond: { $eq: ["$$reminder.reminderDate", currentDate] },
             },
-          }
-        );
-
-        if (reminders && reminders.reminders.length > 0) {
-          //console.log(reminders.reminders)
-            for (const reminder of reminders.reminders) {
-                await firebase.messaging().send({
-                token: userToken,
-                notification: {
-                    title: "Reminder Alert",
-                    body: `Reminder for ${reminder.customerName} on ${reminder.reminderDate}. Amount: ${reminder.amount}`,
-                },
-                android: {
-                    priority: "high",
-                    notification: {
-                    sound: "default",
-                    },
-                  },
-                });
-            }
+          },
         }
-        else {
-            await firebase.messaging().send({
+      );
+
+      // Send notifications based on reminders
+      if (reminders && reminders.reminders.length > 0) {
+        for (const reminder of reminders.reminders) {
+          await firebase.messaging().send({
             token: userToken,
             notification: {
-                title: "Reminder",
-                body: "No reminder",
+              title: "Reminder Alert",
+              body: `Reminder for ${reminder.customerName} on ${reminder.reminderDate}. Amount: ₹${reminder.amount}`,
             },
             android: {
-                priority: "high",
-                notification: {
-                sound: "default", // Adds sound to ensure it's seen as an important notification
-                },
+              priority: "high",
+              notification: {
+                sound: "default",
+              },
             },
-            });
-         }
-         res.send("hello");
-        } catch (error) {
-        console.error("Error checking reminders:", error);
-     }
-  };
+          });
+        }
+      } else {
+        // No reminders for the user today
+        await firebase.messaging().send({
+          token: userToken,
+          notification: {
+            title: "Reminder",
+            body: "No reminders today.",
+          },
+          android: {
+            priority: "high",
+            notification: {
+              sound: "default",
+            },
+          },
+        });
+      }
+    }
+
+    res.send("Notifications sent successfully.");
+  } catch (error) {
+    console.error("Error checking reminders:", error);
+    res.status(500).send("Error sending notifications.");
+  }
+};
+
 
 
 

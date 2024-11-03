@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const customerSchema = new mongoose.Schema({
   customerName: String,
   isDue:Boolean,
-  amount:String,
+  amount:String,  // balance of the customer
   date:String,
   reminder:String,
 });
