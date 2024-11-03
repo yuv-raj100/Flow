@@ -122,14 +122,14 @@ app.get("/", (req, res) => {
 //   }
 // }, 60000);
 
-const interval = setInterval(async () => {
-  try {
-    await sendNotification("raj@123");
-    console.log("Notification sent successfully!");
-  } catch (error) {
-    console.error("Error sending notification:", error);
-  }
-}, 60000);
+// const interval = setInterval(async () => {
+//   try {
+//     await sendNotification();
+//     console.log("Notification sent successfully!");
+//   } catch (error) {
+//     console.error("Error sending notification:", error);
+//   }
+// }, 60000);
 
 
 const start = async () => {

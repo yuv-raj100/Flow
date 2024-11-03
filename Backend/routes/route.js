@@ -4,7 +4,7 @@ const { addCustomer, getCustomers, deleteGroup} = require('../controllers/manage
 const { getReminders, changeReminderStatus } = require('../controllers/manageReminders');
 const { addTransaction, getTransactions, deleteTransaction} = require('../controllers/manageTransactions');
 const {login, register} = require('../controllers/userControllers');
-const { saveToken } = require('../firebase/index');
+const { saveToken, sendNotification } = require('../firebase/index');
 
 
 
@@ -19,6 +19,7 @@ router.get("/getReminders",getReminders);
 router.delete('/deleteUser/:email/:customerId',deleteGroup)
 router.get('/toggleReminder',changeReminderStatus)
 router.post("/registerToken", saveToken);
+router.get("/getNotification", sendNotification);
 // router.get('/getGroups',getGroups)
 // router.get('/search',searchUser)
 // router.post('/addGroup',addGroup)

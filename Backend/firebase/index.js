@@ -48,9 +48,9 @@ const saveToken  = async (req, res) => {
 };
 
 
-const sendNotification = async (email) => {
+const sendNotification = async (req,res) => {
+  const email="raj@123";
     try {
-
         const tokenRecord = await Token.findOne({ userId: "1001" }); // Use the correct userId
         if (!tokenRecord) {
           console.error("No token found for this user");
@@ -66,16 +66,22 @@ const sendNotification = async (email) => {
         console.log(`Checking reminders for ${email} on ${currentDate}`);
 
         const reminders = await reminderModel.findOne(
-            {
+          {
             email,
-            "reminders.reminderDate": currentDate,
+          },
+          {
+            reminders: {
+              $filter: {
+                input: "$reminders",
+                as: "reminder",
+                cond: { $eq: ["$$reminder.reminderDate", currentDate] },
+              },
             },
-            {
-            "reminders.$": 1, // Project only the matching reminders
-            }
+          }
         );
 
         if (reminders && reminders.reminders.length > 0) {
+          //console.log(reminders.reminders)
             for (const reminder of reminders.reminders) {
                 await firebase.messaging().send({
                 token: userToken,
@@ -88,14 +94,13 @@ const sendNotification = async (email) => {
                     notification: {
                     sound: "default",
                     },
-                },
+                  },
                 });
             }
         }
         else {
             await firebase.messaging().send({
-            token:
-                "exMnEgG1RS6z2rRDof2ueY:APA91bFXNQJ6TVrmtjoZpx4WX80jZRmvsNIefFC-0vcEedGufqO_LoSQPgkeWvM49bFjGSlfCKmQ3mfbPNmBkXWdw5RDeTj8SqvckzkqIzfJ0a1xJrc_8nU",
+            token: userToken,
             notification: {
                 title: "Reminder",
                 body: "No reminder",
@@ -107,10 +112,11 @@ const sendNotification = async (email) => {
                 },
             },
             });
-        }
+         }
+         res.send("hello");
         } catch (error) {
         console.error("Error checking reminders:", error);
-    }
+     }
   };
 
 
