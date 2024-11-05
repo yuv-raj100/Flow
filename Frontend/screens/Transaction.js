@@ -1,8 +1,10 @@
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, StatusBar, StyleSheet, Dimensions } from 'react-native'
 import React from 'react'
 import UpArrow from '../svgs/UpArrow';
 import DownArrow from '../svgs/DownArrow';
 import { useNavigation } from '@react-navigation/native';
+const h = Dimensions.get("window").height;
+const w = Dimensions.get("window").width;
 
 const Transaction = ({isReceived, amount, desc, createdOn,reminderDate, billDate, transactionId, username, customerId,email}) => {
 
@@ -14,28 +16,60 @@ const Transaction = ({isReceived, amount, desc, createdOn,reminderDate, billDate
   hours = hours % 12 || 12; 
  
   const formattedTime = `${hours}:${minutes} ${ampm}`;
+  // console.log(w);
     
   return (
-    <TouchableOpacity onPress={()=>navigation.navigate('TransactionDetails', {isReceived, amount, desc, transactionId, username, customerId, email})}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("TransactionDetails", {
+          isReceived,
+          amount,
+          desc,
+          transactionId,
+          username,
+          customerId,
+          email,
+          desc,
+          reminderDate,
+          billDate,
+          createdOn,
+        })
+      }
+    >
       <View className={`m-2 items-${isReceived ? "start" : "end"}`}>
-        <View className="border border-yellow-50 w-[200px] rounded-xl p-2">
-          <View className=" flex-row items-center mb-2 justify-between">
-            <View className="flex-row items-center">
-              {!isReceived ? <UpArrow /> : <DownArrow />}
+        <View style={{ width: Math.floor(w - 170) }}>
+          <View className={`border border-yellow-50  rounded-xl p-2`}>
+            <View className=" flex-row items-center mb-2 justify-between">
+              <View className="flex-row items-center">
+                {!isReceived ? <UpArrow /> : <DownArrow />}
+                <Text
+                  style={{ fontSize: Math.floor(h * 0.023) }}
+                  className={`${
+                    isReceived ? "text-GreenColor" : "text-red-600"
+                  }`}
+                >
+                  {amount}
+                </Text>
+              </View>
+
               <Text
-                className={`${
-                  isReceived ? "text-GreenColor" : "text-red-600"
-                } text-xl`}
+                style={{ fontSize: Math.floor(h * 0.018) }}
+                className="text-slate-300 mr-2"
               >
-                {amount}
+                {formattedTime}
               </Text>
             </View>
-
-            <Text className="text-slate-300 mr-2">{formattedTime}</Text>
+            {desc && <Text className="text-slate-300 pl-1">{desc}</Text>}
           </View>
-          {desc && <Text className="text-slate-300 pl-1">{desc}</Text>}
+          {/* <View className={`items-end mr-1`}>
+            <Text
+              style={{ fontSize: Math.floor(h * 0.02) }}
+              className={`text-slate-300 ${isReceived ? "ml-1" : "mr-1"}`}
+            >
+              ₹ {amount} Due
+            </Text>
+          </View> */}
         </View>
-        <Text className="text-slate-300 ml-[120px]">₹ {amount} Due</Text>
       </View>
     </TouchableOpacity>
   );

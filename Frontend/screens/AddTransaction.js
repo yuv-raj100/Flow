@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet, TextInput, Platform, Pressable, Switch} from "react-native";
-import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StatusBar, StyleSheet, TextInput, Platform, Pressable, Switch, Keyboard, ActivityIndicator, KeyboardAvoidingView, Dimensions} from "react-native";
+import React, { useState, useEffect } from "react";
 import BackArrow from "../svgs/BackArrow";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -7,19 +7,20 @@ import { useDispatch } from "react-redux";
 import { addTransaction } from "../utils/transactionSlice";
 import { API_URL } from "@env";
 
-
+const h = Dimensions.get("window").height
 
 const AddTransaction = ({route}) => {
 
   const dispatch = useDispatch();
 
-  const {username, Received, customerId, email} = route.params;
+  const {username, Received, customerId, email,} = route.params;
   const navigation = useNavigation();
   const [amount,setAmount] = useState('');
   const [desc,setDesc] = useState("");
   const [remind,setRemind] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [error,setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -37,6 +38,22 @@ const AddTransaction = ({route}) => {
     return `${day}-${month}-${year}`;
   })
 
+  const [showButton, setShowButton] = useState(true); // Track button visibility
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setShowButton(false); // Hide button when keyboard is open
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setShowButton(true); // Show button when keyboard is closed
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -46,6 +63,7 @@ const AddTransaction = ({route}) => {
   };
 
    const handleConfirm = (selectedDate) => {
+    console.log(selectedDate);
     if(!remind){
       const day = String(selectedDate.getDate()).padStart(2, '0');
       const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
@@ -86,10 +104,13 @@ const AddTransaction = ({route}) => {
       remindMe,
     }
 
+    setLoading(true);
+
     dispatch(
       addTransaction(transaction)
     );
     await fetchData(transaction);
+    setLoading(false);
    };
 
    const url = API_URL+"/addTransaction";
@@ -120,92 +141,132 @@ const AddTransaction = ({route}) => {
   const toggleSwitch = () => setRemindMe((previousState) => !previousState);
 
   return (
-    <View style={styles.container} className="bg-bgColor h-[100%] ">
-      <View className="flex-row items-center bg-BlueColor p-2">
-        <TouchableOpacity className="mr-2" onPress={() => navigation.pop()}>
-          <BackArrow />
-        </TouchableOpacity>
-        <Text className="rounded-full pl-4 py-2 bg-white w-12 h-12 text-2xl font-bold items-center  mr-3">
-          {username.toUpperCase()[0]}
-        </Text>
-        <Text className="text-lg font-semibold text-white">{username}</Text>
-      </View>
-
-      <View className="flex-row items-center justify-center">
-        <Text
-          className={`${Received ? "text-GreenColor" : "text-red-600"} text-xl`}
-        >
-          ₹
-        </Text>
-        <TextInput
-          editable
-          value={amount}
-          placeholder="0"
-          onChangeText={(amount) => setAmount(amount)}
-          className="border-b-2 border-b-BlueColor h-20 text-white text-2xl items-center  px-4"
-          keyboardType="numeric"
-          placeholderTextColor="#f1f5f9"
-        ></TextInput>
-      </View>
-
-      {error.length > 0 && (
-        <View className="justify-center items-center mt-2">
-          <Text className="text-yellow-600">{error}</Text>
-        </View>
-      )}
-
-      <View className="border-2 border-slate-200 rounded-xl m-2 mt-8 items-center  p-2">
-        <View style={styles.labelContainer}>
-          <Text className="text-slate-400">Entry Date</Text>
-        </View>
-        <View>
-          <Pressable onPress={showDatePicker}>
-            <TextInput
-              placeholder={date}
-              value={date}
-              editable={false}
-              className="h-10 text-white text-lg"
-              placeholderTextColor="#f1f5f9"
-            />
-          </Pressable>
-        </View>
-      </View>
-      <View className="border-2 border-slate-200 rounded-xl m-2 mt-8 items-center  p-2">
-        <View style={styles.labelContainer}>
-          <Text className="text-slate-400">Reminder Date</Text>
-        </View>
-        <View>
-          <Pressable
-            onPress={() => {
-              showDatePicker(), setRemind(true);
-            }}
+    <View className="bg-bgColor h-[100%] ">
+      <KeyboardAvoidingView behavior={"height"}>
+        <View className="flex-row items-center bg-BlueColor p-2">
+          <TouchableOpacity className="mr-2" onPress={() => navigation.pop()}>
+            <BackArrow />
+          </TouchableOpacity>
+          <View
+            style={{ width: h * 0.05, height: h * 0.05 }}
+            className="rounded-full justify-center items-center bg-white  mr-2"
           >
+            <Text
+              style={{ fontSize: Math.floor(h * 0.03) }}
+              className="font-bold"
+            >
+              {username.toUpperCase()[0]}
+            </Text>
+          </View>
+          <Text className="text-lg font-semibold text-white">{username}</Text>
+        </View>
+
+        <View className="flex-row items-center justify-center">
+          <Text
+            className={`${
+              Received ? "text-GreenColor" : "text-red-600"
+            } text-xl`}
+          >
+            ₹
+          </Text>
+          <TextInput
+            editable
+            value={amount}
+            placeholder="0"
+            onChangeText={(amount) => setAmount(amount)}
+            style={{ fontSize: Math.floor(h * 0.035) }}
+            className="border-b-2 border-b-BlueColor h-20 text-white  items-center  px-4"
+            keyboardType="numeric"
+            placeholderTextColor="#f1f5f9"
+          ></TextInput>
+        </View>
+
+        {error.length > 0 && (
+          <View className="justify-center items-center mt-2">
+            <Text className="text-yellow-600">{error}</Text>
+          </View>
+        )}
+
+        <View
+          style={{ marginTop: Math.floor(h * 0.04) }}
+          className="border-2 border-slate-200 rounded-xl m-2 items-center  p-2"
+        >
+          <View style={styles.labelContainer}>
+            <Text
+              style={{ fontSize: Math.floor(h * 0.02) }}
+              className="text-slate-400"
+            >
+              Entry Date
+            </Text>
+          </View>
+          <View>
+            <Pressable onPress={showDatePicker}>
+              <TextInput
+                placeholder={date}
+                value={date}
+                editable={false}
+                style={{ fontSize: Math.floor(h * 0.022), height: h * 0.045 }}
+                className=" text-white"
+                placeholderTextColor="#f1f5f9"
+              />
+            </Pressable>
+          </View>
+        </View>
+        <View
+          style={{ marginTop: Math.floor(h * 0.035) }}
+          className="border-2 border-slate-200 rounded-xl m-2 items-center  p-2"
+        >
+          <View style={styles.labelContainer}>
+            <Text
+              style={{ fontSize: Math.floor(h * 0.02) }}
+              className="text-slate-400"
+            >
+              Reminder Date
+            </Text>
+          </View>
+          <View>
+            <Pressable
+              onPress={() => {
+                showDatePicker(), setRemind(true);
+              }}
+            >
+              <TextInput
+                placeholder={reminderDate}
+                value={reminderDate}
+                editable={false}
+                style={{ fontSize: Math.floor(h * 0.022), height: h * 0.045 }}
+                className="text-white"
+                placeholderTextColor="#f1f5f9"
+              />
+            </Pressable>
+          </View>
+        </View>
+
+        <View
+          style={{ marginTop: Math.floor(h * 0.035) }}
+          className="border-2 border-slate-200 rounded-xl m-2  p-2"
+        >
+          <View style={styles.labelContainer}>
+            <Text
+              style={{ fontSize: Math.floor(h * 0.02) }}
+              className="text-slate-400"
+            >
+              Description
+            </Text>
+          </View>
+          <View>
             <TextInput
-              placeholder={reminderDate}
-              value={reminderDate}
-              editable={false}
-              className="h-10 text-white text-lg"
+              placeholder="Add Note (Optional)"
+              value={desc}
+              editable
+              onChangeText={(desc) => setDesc(desc)}
+              style={{ fontSize: Math.floor(h * 0.018), height: h * 0.045 }}
+              className="h-10 text-white w-full "
               placeholderTextColor="#f1f5f9"
             />
-          </Pressable>
+          </View>
         </View>
-      </View>
-
-      <View className="border-2 border-slate-200 rounded-xl m-2 mt-8  p-2">
-        <View style={styles.labelContainer}>
-          <Text className="text-slate-400">Description</Text>
-        </View>
-        <View>
-          <TextInput
-            placeholder="Add Note (Optional)"
-            value={desc}
-            editable
-            onChangeText={(desc) => setDesc(desc)}
-            className="h-10 text-white w-full "
-            placeholderTextColor="#f1f5f9"
-          />
-        </View>
-      </View>
+      </KeyboardAvoidingView>
 
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
@@ -225,16 +286,23 @@ const AddTransaction = ({route}) => {
         />
       </View>
 
-      <View className="absolute bottom-12 w-[100%]">
-        <TouchableOpacity
-          className="my-2 mx-8 border-slate-400 border border-b-2 rounded-md  px-2 py-2 bg-BlueColor"
-          onPress={() => handleClick()}
-        >
-          <Text className="text-center text-white text-lg font-semibold">
-            Confirm
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {showButton && (
+        <View className="absolute bottom-12 w-[100%]">
+          <TouchableOpacity
+            className="my-2 mx-8 border-slate-400 border border-b-2 rounded-md  px-2 py-2 bg-BlueColor"
+            onPress={() => handleClick()}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text className="text-center text-white text-lg font-semibold">
+                Confirm
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };

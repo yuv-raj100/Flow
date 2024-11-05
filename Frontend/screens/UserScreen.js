@@ -24,6 +24,7 @@ const UserScreen = ({route}) => {
   const [balance,setBalance] = useState(0);
   const [isPositive, setIsPositive] = useState(true);
   const [blank, setBlank] = useState(false);
+  
 
   const url = API_URL+"/getTransaction";
   // console.log(url)
@@ -89,16 +90,29 @@ const UserScreen = ({route}) => {
 
 
   return (
-    <View style={styles.container} className="bg-bgColor h-[100%]">
+    <View className="bg-bgColor h-[100%]">
       <View className="flex-row items-center bg-BlueColor p-2 justify-between">
         <View className="flex-row items-center">
           <TouchableOpacity className="mr-2" onPress={() => navigation.pop()}>
             <BackArrow />
           </TouchableOpacity>
-          <Text className="rounded-full pl-4 py-2 bg-white w-12 h-12 text-2xl font-bold items-center  mr-3">
-            {username.toUpperCase()[0]}
+          <View
+            style={{ width: h * 0.05, height: h * 0.05 }}
+            className="rounded-full justify-center items-center bg-white  mr-2"
+          >
+            <Text
+              style={{ fontSize: Math.floor(h * 0.03) }}
+              className="font-bold"
+            >
+              {username.toUpperCase()[0]}
+            </Text>
+          </View>
+          <Text
+            style={{ fontSize: Math.floor(h * 0.028) }}
+            className="font-semibold text-white"
+          >
+            {username}
           </Text>
-          <Text className="text-lg font-semibold text-white">{username}</Text>
         </View>
         <View className="flex-row justify-between">
           <TouchableOpacity
@@ -119,9 +133,17 @@ const UserScreen = ({route}) => {
         </View>
       </View>
 
-      { transactionList.length == 0 ? (
+      {transactionList.length == 0 ? (
         <View style={styles.activityStyle}>
-          {blank? <View className='justify-center items-center'><Text className='font-bold text-xl text-slate-400'>Start Transaction</Text></View> : <ActivityIndicator size="large" color="#00ff00" />}
+          {blank ? (
+            <View className="justify-center items-center">
+              <Text className="font-bold text-xl text-slate-400">
+                Start Transaction
+              </Text>
+            </View>
+          ) : (
+            <ActivityIndicator size="large" color="#00ff00" />
+          )}
         </View>
       ) : (
         <View className="pb-[190px]">
@@ -133,15 +155,17 @@ const UserScreen = ({route}) => {
         </View>
       )}
 
-      <View className="bg-gray-800 w-[100%] absolute" style={styles.bottomBannerStyle}>
+      <View
+        className="bg-gray-800 w-[100%] absolute"
+        style={styles.bottomBannerStyle}
+      >
         <View className=" flex-row justify-between p-2 items-center ">
-          <Text className="text-lg text-slate-300">
+          <Text style={{ fontSize: h * 0.021 }} className=" text-slate-300">
             Balance {isPositive ? "Advance" : "Due"}
           </Text>
           <Text
-            className={`${
-              isPositive ? "text-GreenColor" : "text-red-600"
-            } text-lg`}
+            style={{ fontSize: h * 0.021 }}
+            className={`${isPositive ? "text-GreenColor" : "text-red-600"} `}
           >
             ₹ {balance}
           </Text>
@@ -152,7 +176,7 @@ const UserScreen = ({route}) => {
             borderBottomWidth: StyleSheet.hairlineWidth,
           }}
         />
-        <View className="flex-row justify-between p-2 px-4">
+        <View className="flex-row justify-between p-2 px-4 mb-1">
           <View>
             <TouchableOpacity
               className="flex-row bg-white w-36 rounded-xl h-10 pl-4 items-center"
@@ -166,7 +190,10 @@ const UserScreen = ({route}) => {
               }
             >
               <DownArrow />
-              <Text className="text-lg text-white text-GreenColor">
+              <Text
+                style={{ fontSize: h * 0.021 }}
+                className=" text-white text-GreenColor"
+              >
                 {" "}
                 Received
               </Text>
@@ -185,7 +212,13 @@ const UserScreen = ({route}) => {
               }
             >
               <UpArrow />
-              <Text className="text-lg text-white text-red-600"> Given</Text>
+              <Text
+                style={{ fontSize: h * 0.021 }}
+                className="text-white text-red-600"
+              >
+                {" "}
+                Given
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

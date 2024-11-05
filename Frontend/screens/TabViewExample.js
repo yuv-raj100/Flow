@@ -1,8 +1,10 @@
 import * as React from "react";
-import { View, useWindowDimensions } from "react-native";
+import { View, useWindowDimensions, Dimensions } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import ActiveReminder from "./ActiveReminder";
 import InactiveReminder from "./InactiveReminder";
+
+const h = Dimensions.get("window").height;
 
 const renderScene = SceneMap({
   first: ActiveReminder,
@@ -25,7 +27,7 @@ export default function TabViewExample() {
       indicatorStyle={{ backgroundColor: "#212121" }}
       //tabStyle={{ borderWidth: 1, borderColor: 'lightgreen',}}
       // labelStyle={{ color: 'lightgreen' }}
-      style={{ backgroundColor: "#212121", textAlign: "left" }}
+      style={{ backgroundColor: "#212121", textAlign: "left", }}
       activeColor="#47CF73"
       indicatorContainerStyle={{ backgroundColor: "#212121",  }}
     />

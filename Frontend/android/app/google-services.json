@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1880284300",
+    "project_id": "flow-83dfd",
+    "storage_bucket": "flow-83dfd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1880284300:android:4e8bd3a8f8821572cfefa9",
+        "android_client_info": {
+          "package_name": "com.yuv_raj100.RajFinance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7kZrfGKBsAtjRqBXViBjpv1zmibXwjmU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

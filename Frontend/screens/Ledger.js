@@ -11,9 +11,11 @@ import { setUsers } from "../utils/usersSlice";
 import { useFocusEffect } from '@react-navigation/native'; 
 import { API_URL } from "@env";
 
+
 const h = Dimensions.get("window").height;
 
 const Ledger = () => {
+
 
   const dispatch = useDispatch();
   // const [email, setEmail] = useState("");
@@ -23,6 +25,7 @@ const Ledger = () => {
   // console.log(url)
 
   const [filterData,setFilterData] = useState([]);
+  const [blank, setBlank] = useState(false);
 
   const userList = useSelector((store) => store.userList.items);
 
@@ -47,6 +50,9 @@ const Ledger = () => {
           const customers = Array.isArray(ans.customers) ? ans.customers : [];
           for (var i = 0; i < customers.length; i++) {
             total += Number(customers[i].amount);
+          }
+          if(customers.length==0){
+            setBlank(true);
           }
           setTotalAmount(total);
           dispatch(setUsers(customers));
@@ -95,7 +101,7 @@ const Ledger = () => {
   
 
   return (
-    <View style={styles.container} className="bg-bgColor h-[100%]">
+    <View className="bg-bgColor h-[100%]">
       <View className="p-1 mt-2 flex-row justify-between items-center">
         <TextInput
           editable
@@ -113,30 +119,52 @@ const Ledger = () => {
 
       <View className="p-2 flex-row justify-between items-center bg-gray-800 m-1 mt-2 rounded-lg">
         <View>
-          <Text className="text-lg font-bold text-BlueColor mb-1">
+          <Text
+            style={{ fontSize: Math.floor(h * 0.025) }}
+            className="text-lg font-bold text-BlueColor mb-1"
+          >
             Net Balance
           </Text>
-          <Text className="items-center text-BlueColor text-[12px]">
+          <Text
+            style={{ fontSize: Math.floor(h * 0.016) }}
+            className="items-center text-BlueColor text-[12px]"
+          >
             {" "}
             {userList.length} Accounts
           </Text>
         </View>
 
         <View className="items-end">
-          <Text className="text-BlueColor text-lg">
+          <Text
+            style={{ fontSize: Math.floor(h * 0.022) }}
+            className="text-BlueColor text-lg"
+          >
             {" "}
             ₹ {Math.abs(Number(totalAmount))}
           </Text>
-          <Text className="text-BlueColor text-[12px]">
+          <Text
+            style={{ fontSize: Math.floor(h * 0.017) }}
+            className="text-BlueColor text-[12px]"
+          >
             You {totalAmount < 0 ? "Pay" : "Get"}
           </Text>
         </View>
       </View>
 
-      { filterData.length==0 ? (
-        <View style={styles.activityStyle}>
-          <ActivityIndicator size="large" color="#47CF73" />
-        </View>
+      {filterData.length == 0 ? (
+        !blank ? (
+          <View style={styles.activityStyle}>
+            <ActivityIndicator size="large" color="#47CF73" />
+          </View>
+        ) : (
+          <View
+            className="justify-center items-center mt-20"
+          >
+            <Text className="font-bold text-xl text-slate-400">
+              Start your digital ledger
+            </Text>
+          </View>
+        )
       ) : (
         <View className="pb-[160px] ">
           <FlatList
@@ -153,7 +181,7 @@ const Ledger = () => {
         </View>
       )}
 
-      <View className="items-end pr-4 absolute " style={styles.addUserStyle} >
+      <View className="items-end pr-4 absolute " style={styles.addUserStyle}>
         <TouchableOpacity
           className="rounded-full p-4 bg-white w-14 items-center"
           onPress={() => navigation.push("AddUser")}

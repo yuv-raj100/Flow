@@ -55,9 +55,14 @@ const RemindersPage = () => {
 
 
   return (
-    <View style={styles.container} className="bg-bgColor h-[100%]">
+    <View className="bg-bgColor h-[100%]">
       <View className="bg-BlueColor p-2 ">
-        <Text className="text-white text-2xl font-bold">Reminders</Text>
+        <Text
+          style={{ fontSize: Math.floor(h * 0.03) }}
+          className="text-white font-bold"
+        >
+          Reminders
+        </Text>
       </View>
 
       {/* <View className="flex-row justify-center">
@@ -72,7 +77,7 @@ const RemindersPage = () => {
       </View> */}
 
       <View style={{ top: h * 0.002, width: "100%", height: "100%" }}>
-        <TabViewExample/>
+        <TabViewExample />
       </View>
 
       {/* <View>

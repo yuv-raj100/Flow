@@ -14,7 +14,7 @@ const h = Dimensions.get("window").height;
 
 const IntroPage = () => {
   return (
-    <View style={styles.container} className="bg-bgColor h-full">
+    <View className="bg-bgColor h-full">
       <Text
         className="text-white text-2xl text-center"
         style={{ marginTop: h * 0.3 }}

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, StatusBar } from "react-native";
-import React, { useState, useRef } from "react";
+import { StyleSheet, Text, View, StatusBar, Keyboard } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
 import { VirtualKeyboard } from "react-native-screen-keyboard";
 import { OtpInput } from "react-native-otp-entry";
 import { TouchableOpacity } from "react-native";
@@ -10,6 +10,22 @@ const SetPinPage = () => {
   // State to store the typed text
   const [typedText, setTypedText] = useState("");
   const [error, setError] = useState("");
+
+  const [showButton, setShowButton] = useState(true); // Track button visibility
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setShowButton(false); // Hide button when keyboard is open
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setShowButton(true); // Show button when keyboard is closed
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const navigation = useNavigation();
 
@@ -40,7 +56,7 @@ const SetPinPage = () => {
   //   };
 
   return (
-    <View style={styles.container} className="bg-bgColor h-[100%]">
+    <View className="bg-bgColor h-[100%]">
       <View className="items-center mt-20">
         <Text className="text-white text-2xl font-bold ">
             Enter new PIN
@@ -67,7 +83,7 @@ const SetPinPage = () => {
         )}
       </View>
 
-      <View className="absolute bottom-12 w-[100%]">
+      {showButton && <View className="absolute bottom-12 w-[100%]">
         <TouchableOpacity
           className="my-2 mx-8 border-slate-400 border border-b-2 rounded-md  px-2 py-2 bg-BlueColor"
           onPress={() => handleClick()}
@@ -76,7 +92,7 @@ const SetPinPage = () => {
             Confirm
           </Text>
         </TouchableOpacity>
-      </View>
+      </View>}
 
       {/* <View className="absolute bottom-7 right-0 border-2  w-[100%]">
         <VirtualKeyboard

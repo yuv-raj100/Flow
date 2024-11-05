@@ -17,7 +17,7 @@ const transactionSlice = createSlice({
   },
   reducers: {
     addTransaction: (state, action) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       state.items.push(action.payload);
     },
 

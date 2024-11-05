@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView, Platform } from "react-native";
-import React, { useState, useRef } from "react";
+import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView, Platform, Keyboard, Dimensions } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
 import { VirtualKeyboard } from "react-native-screen-keyboard";
 import { OtpInput } from "react-native-otp-entry";
 import { TouchableOpacity } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const h = Dimensions.get('window').height;
 
 
 
@@ -14,6 +16,22 @@ const LockPage = () => {
   // const tempPin = "2424";
   const [userPIN, setUserPIN] = useState("");
   const [error, setError] = useState("");
+
+  const [showButton, setShowButton] = useState(true); // Track button visibility
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setShowButton(false); // Hide button when keyboard is open
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setShowButton(true); // Show button when keyboard is closed
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const navigation = useNavigation();
 
@@ -38,7 +56,7 @@ const LockPage = () => {
       setError("");
     }, [])
   );
-
+ 
 
   const handleClick = async ()=>{
     const storedPIN = await AsyncStorage.getItem("userPIN");
@@ -66,18 +84,25 @@ const LockPage = () => {
 //   };
 
   return (
-    <View style={styles.container} className="bg-bgColor h-[100%]">
-      <KeyboardAvoidingView
-        behavior="padding"
-      >
+    <View className="bg-bgColor h-[100%]">
+      <KeyboardAvoidingView behavior="padding">
         <View className="items-center mt-20">
           <Text
             className="text-white text-2xl font-bold "
-            style={{ letterSpacing: 4, fontFamily: "Roboto" }}
+            style={{
+              letterSpacing: 4,
+              fontFamily: "Roboto",
+              fontSize: h * 0.03,
+            }}
           >
             RAJ
           </Text>
-          <Text className="text-white text-2xl font-bold">FINANCE</Text>
+          <Text
+            style={{ fontSize: h * 0.03 }}
+            className="text-white text-2xl font-bold"
+          >
+            FINANCE
+          </Text>
         </View>
         {/* 
       <Text className="text-white text-2xl font-bold">{typedText}</Text> */}
@@ -104,23 +129,31 @@ const LockPage = () => {
 
         <View className="items-center mt-5">
           <TouchableOpacity onPress={() => navigation.push("SetPIN")}>
-            <Text className="text-white text-md font-semibold">
+            <Text
+              style={{ fontSize: h * 0.02 }}
+              className="text-white  font-semibold"
+            >
               Set new PIN
             </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
 
-      <View className="absolute bottom-12 w-[100%]">
-        <TouchableOpacity
-          className="my-2 mx-8 border-slate-400 border border-b-2 rounded-md  px-2 py-2 bg-BlueColor"
-          onPress={() => handleClick()}
-        >
-          <Text className="text-center text-white text-lg font-semibold">
-            Confirm
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {showButton && (
+        <View className="absolute bottom-12 w-[100%]">
+          <TouchableOpacity
+            className="my-2 mx-8 border-slate-400 border border-b-2 rounded-md  px-2 py-2 bg-BlueColor"
+            onPress={() => handleClick()}
+          >
+            <Text
+              style={{ fontSize: h * 0.025 }}
+              className="text-center text-white text-lg font-semibold"
+            >
+              Confirm
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* <View className="absolute bottom-7 right-0 border-2  w-[100%]">
         <VirtualKeyboard

@@ -6,8 +6,8 @@ import Setting from "./Setting";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import RemindersPage from "./RemindersPage";
-import ReminderNotifications from "./ReminderNotifications";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import ProfilePage from "./ProfilePage";
 
 const Tab = createBottomTabNavigator();
 
@@ -74,7 +74,7 @@ const HomePage = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={ReminderNotifications}
+        component={ProfilePage}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (

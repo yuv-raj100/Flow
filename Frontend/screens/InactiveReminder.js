@@ -10,7 +10,6 @@ const InactiveReminder = () => {
 
   const dispatch = useDispatch();
 
-
   const renderTransaction = ({ item }) =>
     !item.isActive && (
       <ReminderEntry

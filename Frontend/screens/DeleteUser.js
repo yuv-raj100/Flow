@@ -1,25 +1,30 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
-import BackArrow from '../svgs/BackArrow';
-import { useNavigation } from '@react-navigation/native';
-import ProfileImg from '../Images/profileImg.png'
-import Dustbin from '../svgs/Dustbin';
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import React, { useState } from "react";
+import BackArrow from "../svgs/BackArrow";
+import { useNavigation } from "@react-navigation/native";
+import ProfileImg from "../Images/profileImg.png";
+import Dustbin from "../svgs/Dustbin";
 import { API_URL } from "@env";
 
-const DeleteUser = ({route}) => {
+const DeleteUser = ({ route }) => {
+  const { username, customerId, email } = route.params;
 
-    const {username, customerId, email} = route.params;
-
+  const [loading, setLoading] = useState(false); // State to manage loading
   const navigation = useNavigation();
-  // const email="raj@123";
 
-  const url = API_URL+`/deleteUser/${email}/${customerId}`;
-
-
-  const handleDelete = async ()=>{
+  const handleDelete = async () => {
+    setLoading(true); // Start loading
     try {
       const response = await fetch(
-        API_URL + `/deleteUser/${email}/${customerId}`,
+        `${API_URL}/deleteUser/${email}/${customerId}`,
         {
           method: "DELETE",
           headers: {
@@ -27,23 +32,28 @@ const DeleteUser = ({route}) => {
           },
         }
       );
+
       if (!response.ok) {
         console.error(`Error: ${response.status} - ${response.statusText}`);
+        setLoading(false); // Stop loading on error
         return;
       }
+
       const result = await response.json();
       if (response.ok) {
         navigation.pop(2);
       } else {
-        console.log("Cannot deleted");
+        console.log("Cannot delete");
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false); // Stop loading after completion
     }
-  }
+  };
 
   return (
-    <View style={styles.container} className="h-[100%] bg-bgColor">
+    <View className="h-[100%] bg-bgColor">
       <View className="flex-row items-center bg-BlueColor p-2 justify-between mb-20">
         <View className="flex-row items-center">
           <TouchableOpacity className="mr-2" onPress={() => navigation.pop()}>
@@ -52,21 +62,27 @@ const DeleteUser = ({route}) => {
           <Text className="text-lg font-semibold text-white">Profile</Text>
         </View>
       </View>
+
       <View className="">
         <Image source={ProfileImg} className="h-[50%] w-[60%] mx-auto " />
         <Text className="text-3xl text-white mx-auto ">{username}</Text>
       </View>
-      <TouchableOpacity onPress={handleDelete}>
-        <View className="bg-gray-800 p-3  flex-row">
+
+      <TouchableOpacity onPress={handleDelete} disabled={loading}>
+        <View className="bg-gray-800 p-3 flex-row items-center justify-center">
           <Dustbin />
-          <Text className="text-slate-300 ml-5">Delete User</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#f5dd4b" className="ml-5" />
+          ) : (
+            <Text className="text-slate-300 ml-5">Delete User</Text>
+          )}
         </View>
       </TouchableOpacity>
     </View>
   );
-}
+};
 
-export default DeleteUser
+export default DeleteUser;
 
 const styles = StyleSheet.create({
   container: {
